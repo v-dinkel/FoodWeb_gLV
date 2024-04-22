@@ -1,0 +1,7 @@
+workdir: "C:/Users/vdinkel/Desktop/Manuscript/snakemake/"
+n: 20
+seed: 100
+nettype : "cluster" #["scale_free", "cluster", "band"]
+r_methods : ['spieceasi', 'ccrepe', 'sparcc', 'spearman', 'propr', 'ecocopula']
+nsimulations: 1000
+inferthresh: 0.4

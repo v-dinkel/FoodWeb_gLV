@@ -1,0 +1,47 @@
+'''
+# NEW ASCENDENCY WITH DIRECTED NETWORK
+'''
+AMIs = []
+Ts = []
+Hs = []
+ascss = {}
+for k in range(0,len(abunds)):
+    vabunds = abunds.iloc[[k]]
+    simG = getSimG(thisG, vabunds, trDict2)
+    
+    T, AMI, Hc, H, ascs =  calcAsc(simG, trDict2)
+    AMIs.append(AMI)
+    Ts.append(T)
+    Hs.append(H)
+    
+    for key in ascs.keys():
+        if key not in ascss:
+            ascss[key] = [ascs[key]]
+        else:
+            ascss[key].append(ascs[key])
+
+As = np.array(AMIs) * np.array(Ts)
+DCs = np.array(Ts) * np.array(Hs)
+
+import scipy.stats
+print("-----------")
+print("AMI: ", scipy.stats.pearsonr(AMIs, ngrip["temp"].values))
+print("T: ", scipy.stats.pearsonr(Ts, ngrip["temp"].values))
+print("A: ", scipy.stats.pearsonr(As, ngrip["temp"].values))
+print("H: ", scipy.stats.pearsonr(Hs, ngrip["temp"].values))
+print("DC: ", scipy.stats.pearsonr(DCs, ngrip["temp"].values))
+print("A/DC: ", scipy.stats.pearsonr(As/DCs, ngrip["temp"].values))
+
+for key in ascss:
+    r,p = scipy.stats.pearsonr(ascss[key], ngrip["temp"].values)
+    if p <= 0.05:
+        print (key, " -> ", r, " p = ",p)
+
+fig, ax1 = plt.subplots()
+ax1.plot([k for k in list(abunds.index)], DCs, '--bo')
+ax2 = ax1.twinx()
+ax2.plot([k for k in ngrip["age"].values], ngrip["temp"].values, '--ro')
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+plt.show()
+'''
+'''
