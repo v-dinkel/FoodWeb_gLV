@@ -600,16 +600,20 @@ def plotBenchmark(axs, row, runIndeces, center, runDict, method, y_label, color,
     #plt.savefig(inputFileDir.replace("abundances","benchmark").replace("filt_base_A.csv",method+filename))
     return {"initial tp/fp": init_tpfp, "proportion of initial tp>fp": init_tpfp_good, "cn tp/fp": masked_tpfp, "proportion of cn tp>fp":masked_tpfp_good, "optimal en threshold":opt_masked_indeces}
 
-nruns = 10
-nettype = "cluster" # cluster #scale_free
-seed = 100
+nruns = snakemake.config["nsimulations"]
+nettype = snakemake.config["nettype"]
+seed = snakemake.config["seed"]
+workdir = snakemake.config["workdir"]+"outputs/"+str(seed)+"/"
+#nruns = 10
+#nettype = "cluster" # cluster #scale_free
+#seed = 100
+#workdir ="/home/viktor/project_migration/FoodWeb_gLV/outputs/"+str(seed)+"/"
 
-workdir ="/home/viktor/project_migration/FoodWeb_gLV/outputs/"+str(seed)+"/"
 basedir = workdir+"abundances/" #filt_base_A int [-1,1], #filt_new_sim_A float [-1.0, 1.0]
 netsdir = workdir+"networks/" 
 benchmarkdir = workdir+"benchmark/" 
-plotdir = workdir
-supplementsdir = workdir
+plotdir = benchmarkdir
+supplementsdir = benchmarkdir
 methods_list = ["spieceasi", "esabo", "ccrepe", "sparcc", "propr", "spearman", "ecocopula", "mask"]
 
 inputFileDir = basedir+"glv_"+nettype+"_"+str(nruns-1)+"_filt_base_A.csv"
