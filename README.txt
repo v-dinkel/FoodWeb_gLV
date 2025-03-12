@@ -37,8 +37,37 @@ Install R and RStudio. If you are using Ubuntu.
 
 Start RStudio and open the script inferNetworks.R. R Studio should automatically suggest the Installation of missing packages. If this does not work, you can manually install the packages using:
 
-install.packages("NetComi")
+install.packages("devtools")
+install.packages("BiocManager")
+...
 
-for all listed packages.
--------
+Some packages (devtools) require System dependencies. This is highly individual and system dependant, therefore see which 'ERROR: dependency '... is missing and try solving it. Also, the packages SpiecEasi, SPRING and NetComi require an extensive list of packages, which also may be in Conflict with version of the OS and R. Package version dependencies are best adressed with:
+
+install.packages("remotes")
+remotes::install_version("Matrix", version="1.6")
+
+++ 3. Configure Snakemake
+Change the workdir in the config.yaml to your folder. This path must be absolute.
+Other variables are:
+n is the amount of species to be simulated. This generates a nxn matrix. Experiments were performed with n=20. Large n significantly increases processing speed.
+seed is the random state.
+nettype defines the topology of the network which will be simulated. They can be cluster, scale_free and band. This uses the SpiecEasi package, for more options please see SpiecEasi documentation.
+r_methods are the networks which need to be inferred. 6 methods are in R, ESABO is inferred during the simulation of abundance data.
+nsimulations is the amount of abundance simulations and corresponding network inferrences.
+
+## 4. Run Snakemake Pipeline
+
+The whole Pipeline can be run using this command
+snakemake -j 4
+
+However, it is recommended running the individual steps by their Name and manually verifying the Output files.
+snakemake -j 4 generateBase
+
+- Make sure to remove/comment package installation commands from the script
+- In the first execution, some missing packages may be installed by NetComi.
+- During network inference, sometimes the text output in the terminal appears to be stuck (no new lines). If that happens, try pressing Enter in the terminal.
+
+
+
+
 
