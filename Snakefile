@@ -63,7 +63,7 @@ rule generateBasicSyntheticNetwork:
 	output:
 		"outputs/"+str(config['seed'])+"/graphs/base_graph_"+config['nettype']+".csv",
 	script:
-		"scripts/generateBaseNetworks.R"
+		"scripts/1_generateBaseNetworks.R"
 
 rule GenerateSyntheticAbundanceData_gLV:
 	priority: 99
@@ -74,7 +74,7 @@ rule GenerateSyntheticAbundanceData_gLV:
 		expand("outputs/"+str(config['seed'])+"/abundances/glv_"+config['nettype']+"_{sim}_filt_abunds.csv", sim=[str(k) for k in range(config['nsimulations'])]),
 		expand("outputs/"+str(config['seed'])+"/networks/glv_"+config['nettype']+"_{sim}_esabo.csv", sim=[str(k) for k in range(config['nsimulations'])]),
 	script:
-		"scripts/glv_simulation.py"
+		"scripts/2_glv_simulation.py"
 
 rule inferNetworksR:
 	priority: 98
@@ -83,23 +83,25 @@ rule inferNetworksR:
 	output:
 		expand(config['workdir']+"outputs/"+str(config['seed'])+"/networks/glv_"+config['nettype']+"_{sim}_{r_method}.csv", sim=[str(k) for k in range(config['nsimulations'])], r_method=[k for k in config['r_methods']]),
 	script:
-		"scripts/inferNetworks.R"
+		"scripts/3_inferNetworks.R"
+		
+rule assessInferenceQuality:
+	priority: 97
+	input:
+		expand(config['workdir']+"outputs/"+str(config['seed'])+"/abundances/glv_"+config['nettype']+"_{sim}_filt_base_A.csv", sim=[str(k) for k in range(config['nsimulations'])]),
+	script:
+		"scripts/4_qualityAssessment.py"
 
 rule inferOnlySENetworksR:
-	priority: 97
+	priority: 96
 	input:
 		expand(config['workdir']+"outputs/"+str(config['seed'])+"/abundances/glv_"+config['nettype']+"_{sim}_filt_abunds.csv", sim=[str(k) for k in range(config['nsimulations'])]),
 	output:
 		expand(config['workdir']+"outputs/"+str(config['seed'])+"/networks/glv_"+config['nettype']+"_{sim}_{r_method}_HT.csv", sim=[str(k) for k in range(config['nsimulations'])], r_method=['spieceasi']),
 	script:
-		"scripts/inferNetworks_SE_HT.R"
+		"scripts/5_inferNetworks_SE_HT.R"
 
-rule assessInferenceQuality:
-	priority: 96
-	input:
-		expand(config['workdir']+"outputs/"+str(config['seed'])+"/abundances/glv_"+config['nettype']+"_{sim}_filt_base_A.csv", sim=[str(k) for k in range(config['nsimulations'])]),
-	script:
-		"scripts/qualityAssessment.py"
+
 
 
 
