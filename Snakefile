@@ -71,6 +71,7 @@ rule GenerateSyntheticAbundanceData_gLV:
 		"outputs/"+str(config['seed'])+"/graphs/base_graph_"+config['nettype']+".csv",
 	output:
 		expand("outputs/"+str(config['seed'])+"/abundances/glv_"+config['nettype']+"_{sim}.csv", sim=[str(k) for k in range(config['nsimulations'])]),
+		expand("outputs/"+str(config['seed'])+"/abundances/glv_"+config['nettype']+"_{sim}_filt_abunds.csv", sim=[str(k) for k in range(config['nsimulations'])]),
 		expand("outputs/"+str(config['seed'])+"/networks/glv_"+config['nettype']+"_{sim}_esabo.csv", sim=[str(k) for k in range(config['nsimulations'])]),
 	script:
 		"scripts/glv_simulation.py"

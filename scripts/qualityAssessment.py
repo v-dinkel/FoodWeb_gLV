@@ -500,7 +500,7 @@ def plotBenchmark(axs, row, runIndeces, center, runDict, method, y_label, color,
     indecesList = [alreadyGoodIndeces, switchedIndeces, unswitchedIndeces]
     origDict = runDict[method]
     #
-    titles = ["Initial Inference with TP>FP ("+str(int(100*(len(alreadyGoodIndeces)/1000)))+"%)", "Switched inital TP<FP to TP>FP ("+str(int(100*(len(switchedIndeces)/1000)))+"%)", "Bad Initial Inference (TP<FP): "+str(len(unswitchedIndeces))]
+    titles = ["Initial Inference with TP>FP ("+str(int(100*(len(alreadyGoodIndeces)/nruns)))+"%)", "Switched inital TP<FP to TP>FP ("+str(int(100*(len(switchedIndeces)/1000)))+"%)", "Bad Initial Inference (TP<FP): "+str(len(unswitchedIndeces))]
     
     j = 0
     for onlyIndeces in indecesList[:-1]:
@@ -578,9 +578,9 @@ def plotBenchmark(axs, row, runIndeces, center, runDict, method, y_label, color,
     axs[0, 1].legend()   
     
     init_tpfp = (int(np.mean([item for sublist in base for item in sublist])*100))/100
-    init_tpfp_good = (int((len(alreadyGoodIndeces)/1000)*100))/100
+    init_tpfp_good = (int((len(alreadyGoodIndeces)/nruns)*100))/100
     masked_tpfp = (int((np.mean([item for sublist in maxdatas for item in sublist]) + np.mean([item for sublist in base for item in sublist]))*100))/100
-    masked_tpfp_good = (int(((len(alreadyGoodIndeces) + len(switchedIndeces))/1000)*100))/100
+    masked_tpfp_good = (int(((len(alreadyGoodIndeces) + len(switchedIndeces))/nruns)*100))/100
     opt_masked_indeces = (int((np.mean([item for sublist in maxindeces for item in sublist]))*100))/100
     print ("Init. TP/FP: ", init_tpfp)
     print ("% Init. TP/FP>1: ", init_tpfp_good)
@@ -600,21 +600,21 @@ def plotBenchmark(axs, row, runIndeces, center, runDict, method, y_label, color,
     #plt.savefig(inputFileDir.replace("abundances","benchmark").replace("filt_base_A.csv",method+filename))
     return {"initial tp/fp": init_tpfp, "proportion of initial tp>fp": init_tpfp_good, "cn tp/fp": masked_tpfp, "proportion of cn tp>fp":masked_tpfp_good, "optimal en threshold":opt_masked_indeces}
 
-nruns = 1000
+nruns = 10
 nettype = "cluster" # cluster #scale_free
 seed = 100
 
-workdir ="C:/Users/vdinkel/Desktop/Manuscript/snakemake/outputs/"+str(seed)+"/"
+workdir ="/home/viktor/project_migration/FoodWeb_gLV/outputs/"+str(seed)+"/"
 basedir = workdir+"abundances/" #filt_base_A int [-1,1], #filt_new_sim_A float [-1.0, 1.0]
 netsdir = workdir+"networks/" 
 benchmarkdir = workdir+"benchmark/" 
-plotdir = "C:/Users/vdinkel/Desktop/Manuscript/plots/"
-supplementsdir = "C:/Users/vdinkel/Desktop/Manuscript/supplementary_information/"
+plotdir = workdir
+supplementsdir = workdir
 methods_list = ["spieceasi", "esabo", "ccrepe", "sparcc", "propr", "spearman", "ecocopula", "mask"]
 
 inputFileDir = basedir+"glv_"+nettype+"_"+str(nruns-1)+"_filt_base_A.csv"
 
-if False:
+if True:
     outputs = processOutputs()
 
 print ("Loading processed files")
@@ -668,7 +668,10 @@ for meth in allRuns.keys():
     counts, bins = np.histogram(switchIndeces)
     plt.stairs(counts, bins, fill=True)
     totalBadRunPercentage = int(np.round(len(badRunIndeces) / nruns, 2) * 100)
-    switchedPercentage = int(np.round(len(switchRunIndeces) / len(badRunIndeces), 2)*100)
+    try:
+        switchedPercentage = int(np.round(len(switchRunIndeces) / len(badRunIndeces), 2)*100)
+    except:
+        switchedPercentage = 0
     improvedBadRunPercentage = int(np.round((len(badRunIndeces) - len(switchRunIndeces)) / nruns, 2)*100)
     plt.title(meth.upper()+"\nTP<FP percentage: "+str(totalBadRunPercentage)+"% ~> "+str(improvedBadRunPercentage)+" %\nTP>FP switch percentage: "+str(switchedPercentage)+" %")
     p += 1
@@ -751,7 +754,6 @@ for method in methods_list:
 
 pd_statistics = pd.DataFrame(method_statistics).T
 pd_statistics.to_csv(supplementsdir+"/method_synthetic_benchmark.csv", sep=',', index=True, encoding='utf-8')
-
 
 '''
 fig, (ax, ax1) = plt.subplots(1, 2, sharex=True)

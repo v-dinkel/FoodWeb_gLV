@@ -1,3 +1,20 @@
+#install.packages("remotes")
+#install.packages("ragg")
+#install.packages("devtools")
+#install.packages("BiocManager")
+
+#remotes::install_version("Matrix", version = "1.6")
+#install.packages("pulsar")
+#devtools::install_github("zdk123/SpiecEasi")
+#install.packages("sn")
+#devtools::install_github("GraceYoon/SPRING")
+
+#remotes::install_version("Hmisc", version = "5.1")
+#devtools::install_github("stefpeschel/NetComi", repos= c("https://cloud.r-project.org/", BiocManager::repositories()))
+
+#install.packages("RcppGSL") #this is system requirement
+#install.packages("ecoCopula")
+
 library(NetCoMi)
 library(tidyverse)
 library(analogue)
