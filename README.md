@@ -100,6 +100,7 @@ Install RStudio from the official source.
   ```r
   install.packages("devtools")
   install.packages("BiocManager")
+  ...
   ```
 
 ### **Handling Missing System Dependencies**
