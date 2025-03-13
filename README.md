@@ -56,6 +56,7 @@ cd FoodWeb_gLV
 ```
 
 ### **Create and Activate a Conda Environment**
+The repository contains a requirements.txt which includes the python packages and versions.
 ```bash
 conda create --name foodweb_glv --file requirements.txt
 conda activate foodweb_glv
