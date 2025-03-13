@@ -1,7 +1,7 @@
 workdir: "/home/viktor/project_migration/FoodWeb_gLV/"
 n: 20
 seed: 100
-nettype : "cluster" #["scale_free", "cluster", "band"]
+nettype : "cluster" # other options: "scale_free", "cluster", "band"
 r_methods : ['spieceasi', 'ccrepe', 'sparcc', 'spearman', 'propr', 'ecocopula']
 nsimulations: 10
 inferthresh: 0.4

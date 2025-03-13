@@ -45,9 +45,3 @@ for (sim in snakemake@input[]){
   write.table(spieceasi_A_HT, str_replace(tmpOut, "infmethod.csv", "spieceasi_weighted.csv"), sep=",", dec=".")
   
 }
-
-#measurePar = list(method = "mb",
-#                  pulsar.params = list(rep.num = 10),
-#                  lambda.min.ratio=1e-3, 
-#                  nlambda=20,
-#                  symBetaMode = "ave"),
