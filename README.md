@@ -15,27 +15,32 @@ This guide includes setup instructions for R dependencies using RStudio.
 
 ## Workflow Overview
 
-### **1. Generating Synthetic Networks and Abundance Data**
+### **1. Generating Synthetic Networks**
 - `generateBasicSyntheticNetwork`:
   - Creates a synthetic network topology (cluster, scale-free, or band) with *n* species.
   - Serves as the basis for simulation.
 
+### **2. Generating Synthetic Abundance Data**
 - `generateSyntheticAbundanceData_gLV`:
   - Assigns random interaction strengths to synthetic network edges.
   - Simulates species abundances using the generalized Lotka-Volterra model.
   - Extracts attractor states as a sample to form a final abundance matrix for each simulation.
   - Infers ESABO networks from abundance data.
-
-### **2. Inferring Networks with R Methods**
+  
+### **3. Inferring Networks with R Methods**
 - `inferNetworksR`:
   - Uses the simulated abundances to infer networks using R-based inference methods:
     - SpiecEasi, CCREPE, SPARCC, Spearman, propr, ecocopula.
 
-### **3. Benchmarking Inference Quality**
+### **4. Benchmarking Inference Quality**
 - `benchmarkInferenceQuality`:
   - Aggregates results and compares inferred networks to the original synthetic network.
   - Generates plots showing true positive (TP) / false positive (FP) rates and positive predictive values (PPV).
-
+ 
+### **(Optional) Compare Consensus Network with SpiecEasi of similar size (high threshold, HT)**
+- `inferOnlySENetworksR`:
+  - Infers and exports SpiecEasi network with weighted edges/associations to match the size of the Consensus Network.
+  - Generates plots showing difference in amount of true positives (TP) and false positives (FP).
 ---
 
 ## **1. Setting Up the Python Environment**
