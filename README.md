@@ -154,7 +154,7 @@ Outputs are stored in `outputs/<seed>/`.
 | Folder      | Description  |
 |------------|-------------|
 | **abundances/**  | Contains abundance data from simulations. Includes plots illustrating generalized Lotka-Volterra simulations from **second pipeline step**. |
-| **benchmark/**   | Aggregated inference results with TP/FP and PPV plots as output from **fourth pipeline step**. |
+| **benchmark/**   | Aggregated inference results with TP/FP and PPV plots as output from **fourth pipeline step**. ![CN improvement of SpiecEasi Network](images/benchmark_spieceasi_initial_cn.png)|
 | **graphs/**     | Synthetic network topology graphs created in **first pipeline step**. |
 | **networks/**    | Inferred networks for each simulation from **third pipeline step**. |
 
