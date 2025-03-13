@@ -139,6 +139,7 @@ snakemake -j 4 generateBasicSyntheticNetwork
 snakemake -j 4 generateSyntheticAbundanceData_gLV
 snakemake -j 4 inferNetworksR
 snakemake -j 4 benchmarkInferenceQuality
+(optional): snakemake -j 4 inferOnlySENetworksR
 ```
 
 (`-j 4` sets the number of processors; adjust as needed.)
