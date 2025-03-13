@@ -1,5 +1,12 @@
 This is the Snakemake Pipeline for (1) simulating mutispecies predator prey dynamics with gLV and (2) inferring networks with 7 inference Methods and (3) Analysis script to assess inference qualities. This requires working Python and R environments, code Editors like Spyder and Rstudio are not strictly required but recommended to make changes to the scripts. Here, the Setup process of R requirements is described using Rstudio.
 
+Workflow description:
+
+generateBasicSyntheticNetwork - generates a synthetic network topology (cluster, scale free, band) with n-species, which serves as the basis for simulations
+generateSyntheticAbundaceData_gLV - edges of synthetic network get assigned interactions randomly, then the species abundances are simulated with the generalized Lotka-Volterra model. Attractor states serve as a sample, contributing to the final abundance Matrix. In this step ESABO network is inferred from the abundances.
+inferNetworksR - given the simulated abundances, networks are inferred using the R environment (SpiecEasi, CCREPE, SPARCC, Spearman, propr, ecocopula) 
+benchmarkInferenceQuality - inference results are aggreated and qualitatively compared to the base synthetic network. Plots Show the TP/FP rate and 
+
 ++ 1. Setup Python Environment 
 
 Python & Package Management e.g. Miniforge:
@@ -57,17 +64,27 @@ nsimulations is the amount of abundance simulations and corresponding network in
 
 ## 4. Run Snakemake Pipeline
 
-The whole Pipeline can be run using this command
-snakemake -j 4
+The Pipeline doesn't use snakemake rule dependencies to accomplish a fully automated workflow. This is intentional since simulations and network inferences are time consuming and large benchmarks can have unexpected Errors at some Point in the execution. This is to avoid snakemake cleanup process and keep all generated files for error inspection or partial analyses.
 
-However, it is recommended running the individual steps by their Name and manually verifying the Output files.
-snakemake -j 4 generateBase
+Run the individual steps by their Name. The -j 4 command defines the amount of processors used. Adapt to your Settings.
 
-- Make sure to remove/comment package installation commands from the script
-- In the first execution, some missing packages may be installed by NetComi.
+snakemake -j 4 generateBasicSyntheticNetwork
+snakemake -j 4 generateSyntheticAbundaceData_gLV
+snakemake -j 4 inferNetworksR
+snakemake -j 4 benchmarkInferenceQuality
+
+## 5. Outputs
+
+outputs/<seed>/
+
+abundances - contains abundance files from n-simulations. Plots illustrate an example sample Simulation (generalized lotka volterra) where only the last values (attractors) are extracted. An abundance table is formed by attractors (
+benchmark - aggregated results of the simulations and plots
+Graphs - synthetic topology graphs
+networks - inferred networks for each simulation
+
+
+Notes:
+
+- Make sure to remove/comment package installation commands from the R script
+- In the first execution, some missing R packages may be installed by NetComi.
 - During network inference, sometimes the text output in the terminal appears to be stuck (no new lines). If that happens, try pressing Enter in the terminal.
-
-
-
-
-
