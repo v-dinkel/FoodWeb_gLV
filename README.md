@@ -2,14 +2,14 @@
 
 This repository contains a **Snakemake pipeline** for:
 1. Simulating multi-species predator-prey dynamics using the **generalized Lotka-Volterra (gLV) model**.
-2. Inferring ecological networks using **seven different inference methods**.
-3. Analyzing and benchmarking inference quality.
+2. Inferring ecological networks using seven different inference methods.
+3. Analyzing and benchmarking inference quality (TP/FP rate, PPV).
 
 ## Requirements
 
-A working **Python** and **R** environment is required. While code editors such as **Spyder** (Python) and **RStudio** (R) are recommended for modifying scripts, they are not strictly necessary.
+A working **Python** and **R** environment is required. While code editors such as Spyder (Python) and RStudio (R) are recommended for modifying scripts, they are not strictly necessary.
 
-This guide includes setup instructions for **R dependencies** using RStudio.
+This guide includes setup instructions for R dependencies using RStudio.
 
 ---
 
@@ -17,24 +17,24 @@ This guide includes setup instructions for **R dependencies** using RStudio.
 
 ### **1. Generating Synthetic Networks and Abundance Data**
 - `generateBasicSyntheticNetwork`:
-  - Creates a synthetic network topology (**cluster, scale-free, or band**) with *n* species.
+  - Creates a synthetic network topology (cluster, scale-free, or band) with *n* species.
   - Serves as the basis for simulation.
 
 - `generateSyntheticAbundanceData_gLV`:
-  - Assigns random interaction strengths to network edges.
-  - Simulates species abundances using the **generalized Lotka-Volterra model**.
-  - Extracts attractor states to form a final abundance matrix.
-  - **Infers ESABO networks** from abundance data.
+  - Assigns random interaction strengths to synthetic network edges.
+  - Simulates species abundances using the generalized Lotka-Volterra model.
+  - Extracts attractor states as a sample to form a final abundance matrix for each simulation.
+  - Infers ESABO networks from abundance data.
 
 ### **2. Inferring Networks with R Methods**
 - `inferNetworksR`:
-  - Uses the simulated abundances to infer networks using **R-based inference methods**:
-    - **SpiecEasi**, **CCREPE**, **SPARCC**, **Spearman**, **propr**, **ecocopula**.
+  - Uses the simulated abundances to infer networks using R-based inference methods:
+    - SpiecEasi, CCREPE, SPARCC, Spearman, propr, ecocopula.
 
 ### **3. Benchmarking Inference Quality**
 - `benchmarkInferenceQuality`:
   - Aggregates results and compares inferred networks to the original synthetic network.
-  - Generates plots showing **true positive (TP) / false positive (FP) rates**.
+  - Generates plots showing true positive (TP) / false positive (FP) rates and positive predictive values (PPV).
 
 ---
 
@@ -77,8 +77,8 @@ snakemake --version
 ```
 
 ### **(Optional) Set Python Interpreter in Spyder**
-- Open **Spyder**
-- Navigate to **Tools > Preferences > Python Interpreter**
+- Open Spyder
+- Navigate to Tools > Preferences > Python Interpreter
 - Select: `/home/user/miniforge3/envs/foodweb_glv/bin/python`
 
 ---
@@ -86,7 +86,7 @@ snakemake --version
 ## **2. Setting Up the R Environment**
 
 ### **Install R and RStudio**
-On **Ubuntu**, install RStudio from the official source.
+Install RStudio from the official source.
 
 ### **Open `inferNetworks.R` in RStudio**
 - RStudio should automatically prompt you to install missing packages.
@@ -99,7 +99,7 @@ On **Ubuntu**, install RStudio from the official source.
 ### **Handling Missing System Dependencies**
 - Some packages (e.g., `devtools`) require additional system dependencies.
 - If you encounter errors like `ERROR: dependency '...' is missing`, resolve them by installing missing dependencies.
-- Packages **SpiecEasi, SPRING, and NetComi** require multiple dependencies, which might conflict with OS or R versions.
+- Packages SpiecEasi, SPRING, and NetComi require multiple dependencies, which might conflict with OS or R versions.
 
 ### **Installing Specific Package Versions**
 If needed, use **remotes** to install specific versions:
@@ -112,13 +112,13 @@ remotes::install_version("Matrix", version="1.6")
 
 ## **3. Configuring Snakemake**
 
-Modify `config.yaml` to set the working directory **(absolute path required)**.
+Modify `config.yaml` to set the working directory (absolute path required).
 
 ### **Key Configuration Variables:**
 - `n`: Number of species (*e.g., n = 20*). Higher values increase processing time.
 - `seed`: Random seed for reproducibility.
-- `nettype`: Network topology (*cluster, scale-free, band*). Uses **SpiecEasi**.
-- `r_methods`: Inference methods to run (**6 in R**, plus **ESABO** inferred during abundance simulation).
+- `nettype`: Network topology (*cluster, scale-free, band*). Uses SpiecEasi.
+- `r_methods`: Inference methods to run (6 in R, plus ESABO in Python inferred during abundance simulation).
 - `nsimulations`: Number of abundance simulations and corresponding network inferences.
 
 ---
@@ -145,24 +145,17 @@ Outputs are stored in `outputs/<seed>/`.
 
 | Folder      | Description  |
 |------------|-------------|
-| **abundances/**  | Contains abundance data from simulations. Includes plots illustrating generalized Lotka-Volterra simulations. |
-| **benchmark/**   | Aggregated inference results with TP/FP plots. |
-| **graphs/**     | Synthetic network topology graphs. |
-| **networks/**    | Inferred networks for each simulation. |
+| **abundances/**  | Contains abundance data from simulations. Includes plots illustrating generalized Lotka-Volterra simulations from **second pipeline step**. |
+| **benchmark/**   | Aggregated inference results with TP/FP and PPV plots as output from **fourth pipeline step**. |
+| **graphs/**     | Synthetic network topology graphs created in **first pipeline step**. |
+| **networks/**    | Inferred networks for each simulation from **third pipeline step**. |
 
 ---
 
 ## **Notes & Troubleshooting**
-- **Avoid installing R packages inside the script during snakemake execution** – manage installation manually.
-- During the first execution, **NetComi** may install missing R packages.
-- Network inference can occasionally **freeze terminal output**. If stuck, try pressing **Enter** in the terminal.
-
----
-
-## **References & Documentation**
-- **Snakemake:** [https://snakemake.readthedocs.io](https://snakemake.readthedocs.io)
-- **SpiecEasi:** [https://github.com/zdk123/SpiecEasi](https://github.com/zdk123/SpiecEasi)
-
+- Avoid installing R packages inside the script during snakemake execution – manage package installation manually.
+- During the first execution, NetComi may install missing R packages.
+- Network inference can occasionally freeze terminal output. If stuck, try pressing Enter in the terminal.
 
 ---
 
