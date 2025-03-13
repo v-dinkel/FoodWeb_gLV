@@ -103,9 +103,9 @@ Install RStudio from the official source.
   ```
 
 ### **Handling Missing System Dependencies**
-- Some packages (e.g., `devtools`) require additional system dependencies.
 - If you encounter errors like `ERROR: dependency '...' is missing`, resolve them by installing missing dependencies.
-- Packages SpiecEasi, SPRING, and NetComi require multiple dependencies, which might conflict with OS or R versions.
+- Some packages (e.g., `devtools`) require additional system dependencies, which need to be installed outside of R. 
+- Packages SpiecEasi, SPRING, and NetComi require **multiple** dependencies, which might conflict with OS or R versions. In this case specific package versions have to be hand-picked.
 
 ### **Installing Specific Package Versions**
 If needed, use **remotes** to install specific versions:
