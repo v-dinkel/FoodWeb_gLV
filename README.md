@@ -154,8 +154,8 @@ Outputs are stored in `outputs/<seed>/`.
 | Folder      | Description  |
 |------------|-------------|
 | **graphs/**     | Synthetic network topology graphs created in **first pipeline step**. |
-| **networks/**    | Inferred networks for each simulation from **third pipeline step**. |
 | **abundances/**  | Contains abundance data from simulations. Includes plots illustrating generalized Lotka-Volterra simulations from **second pipeline step**. <br /><img src="images/glv_cluster_8_sim_.jpg" alt="gLV Simulation Example" width="350"> <img src="images/glv_cluster_8_abunds_.jpg" alt="gLV Attractors Example" width="350">|
+| **networks/**    | Inferred networks for each simulation from **third pipeline step**. |
 | **benchmark/**   | Aggregated inference results with TP/FP and PPV plots as output from **fourth pipeline step**.<br /><img src="images/benchmark_spieceasi_initial_cn.png" alt="Consensus Network improving SpiecEasi Network" width="350"> |
 
 ---
