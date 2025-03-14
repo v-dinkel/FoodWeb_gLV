@@ -8,12 +8,8 @@ Created on Thu Jan 12 16:29:44 2023
 import pandas as pd
 import numpy as np
 import networkx as nx
-import networkx.algorithms.community as nx_comm
 import matplotlib.pyplot as plt
-from scipy.stats import ttest_ind
-from scipy.stats import mannwhitneyu
 import seaborn as sns
-import json
 import pickle
 
 def msum(A):
@@ -21,10 +17,6 @@ def msum(A):
 
 def AND(A, B):
     return B.where(A == 1, 0)
-
-def OR(A, B):
-    C = abs(A) + abs(B)
-    return C.replace(2, 1)
 
 def fillDiagonal(dataFrame, value = 0):
     i = 0
@@ -86,6 +78,10 @@ def getMultiplexReverseThresh(multA, thresh):
     return multA
 
 def processOutputs():
+    # this function aggregates the simulation runs into single quality statistics e.g. accuracy, true positive rates etc.
+    # in the pipeline output, only positive predictive value (PPV) and the rate of true positives to false positives (TP/FP) are relevant
+    # this aggregation also includes analysis of positive and negative links and reverse runs.
+    # for the sake of completeness, these additional aggregations are kept in with increased computation time as tradeoff
     outputs = []
     allRuns = {}
     allAccs = {}
@@ -132,6 +128,7 @@ def processOutputs():
         esabo_A =  pd.read_csv(inputNetsDir+"esabo.csv", delimiter=",", header=0, index_col=0)
         ecocopula_A =  pd.read_csv(inputNetsDir+"ecocopula.csv", delimiter=",", header=0, index_col=0)
         
+        # set the diagonal to 0 as these are no interactions
         A_vals = fillDiagonal(A_vals, 0)
         A_vals_pos, A_vals_neg = getPosNegAs(A_vals)
         A_vals_pos.index = propr_A.index
@@ -139,6 +136,7 @@ def processOutputs():
         A_vals_neg.index = propr_A.index
         A_vals_neg.columns = propr_A.columns
         
+        # clean up row and column names
         sim_A.index = propr_A.index
         sim_A.columns = propr_A.columns
         
@@ -148,6 +146,7 @@ def processOutputs():
         
         abs_sim_A = sim_A.where(abs(sim_A) == 0, 1)
  
+        # generate consensus network
         n_multiplex = 7
         multiplex_A = propr_A + spieceasi_A + ccrepe_A + sparcc_A + spearman_A + esabo_A + ecocopula_A
         multiplex_A = multiplex_A / n_multiplex
@@ -156,31 +155,29 @@ def processOutputs():
         
         ownTPs = []
         w_ownTPs = []
+        # go through the consensus threshold 0.0 to 1.0 with 0.1 steps and asses TPs and FPs
         for k in range(0, 11):
             ownTPs.append(getOwnTPs(abs_sim_A, getMultiplexThresh(multiplex_A, k/10)))
         for k in range(0, 11):
             w_ownTPs.append(getOwnTPs(abs_sim_A, getMultiplexThresh(w_multiplex_A, k/10)))
     
+        # get consensus network at configured (optimal) threshold of 0.5
         newBest = getMultiplexThresh(w_multiplex_A, 0.5)
         
         allmethods = {"propr_A": propr_A, "spieceasi_A": spieceasi_A, "ccrepe_A": ccrepe_A, "sparcc_A": sparcc_A, "spearman_A": spearman_A, "esabo_A": esabo_A, "ecocopula_A": ecocopula_A, "mask_A": getMultiplexThresh(multiplex_A, 0.0)} #
-        #pd_list = []
+
         fnrs = {}
         tpfn_ratios = {}
         tpfp_ratios = {}
         
-        #pd_list_reverse = []
+
         fnrs_reverse = {}
         tpfn_ratios_reverse = {}
         tpfp_ratios_reverse = {}
         
+        # go through all methods and consensus threshold 0.0 to 1.0 and get inference quality metrics
         for key in allmethods.keys():
             method = allmethods[key]
-            
-            #print(key,"---")
-            #print(" TP: ",prev_tps["tp"], " -> ", post_tps["tp"], " = [",str(post_tps["tp"]-prev_tps["tp"]),"]")
-            #print(" FP: ",prev_tps["fp"], " -> ", post_tps["fp"], " = [",str(post_tps["fp"]-prev_tps["fp"]),"]")
-            #pd_list.append([key, prev_tps["tp"], post_tps["tp"], prev_tps["fp"], post_tps["fp"]])
             
             thisTPsL = []
             thisFPsL = []
@@ -296,6 +293,7 @@ def processOutputs():
         
         outputs.append([abs_sim_A, allmethods])
     
+    # save the aggregated inference metrics into pickle files for future loading
     with open(benchmarkdir+'allRuns_'+str(nruns-1)+'.pkl', 'wb') as f: 
         pickle.dump(allRuns, f)
     with open(benchmarkdir+'allAccs_'+str(nruns-1)+'.pkl', 'wb') as f: 
@@ -326,6 +324,7 @@ def processOutputs():
     return outputs
 
 def loadProcessedOutputs(benchmarkdir):
+    # loads the processed pickle files (aggregated inference quality metrics)
     file_allRuns = open(benchmarkdir+'allRuns_'+str(nruns-1)+'.pkl', 'rb')
     allRuns = pickle.load(file_allRuns)
     file_allRuns.close()
@@ -383,18 +382,21 @@ def plotBenchmark(axs, row, runIndeces, center, runDict, method, y_label, color,
     maxdatas = []
     maxindeces = []
     
-    # data contains lists of runs and increasing thresholds: x[0] = run1[0], run1[1], run1[2], ...
+    # processed data contains lists of runs and increasing thresholds: x[0] = run1[0], run1[1], run1[2], ...
     # Because we want to plot results of one threshold of all runs, we have to unfold so that x[0] = run1[0], run2[0], etc...
     
+    # alreadyGoodIndeces are indeces of runs where TP > FP at initial inference
     alreadyGoodIndeces = list(set([k for k in range(0,nruns)]) - set(runIndeces[method]['badRunIndeces']))
+    # unswitchedIndeces are indeces of runs where FP > TP at all consensus thresholds
     unswitchedIndeces = list(set(runIndeces[method]['badRunIndeces']) - set(runIndeces[method]['switchRunIndeces']))
+    # switchedIndeces are indeces of runs where initial TP < FP and with consensus network became TP>FP
     switchedIndeces = runIndeces[method]['switchRunIndeces']
 
     indecesList = [alreadyGoodIndeces, switchedIndeces, unswitchedIndeces]
     origDict = runDict[method]
-    #
     titles = ["Initial Inference with TP>FP ("+str(int(100*(len(alreadyGoodIndeces)/nruns)))+"%)", "Switched inital TP<FP to TP>FP ("+str(int(100*(len(switchedIndeces)/1000)))+"%)", "Bad Initial Inference (TP<FP): "+str(len(unswitchedIndeces))]
     
+    # this is the separation of results into alreadyGoodIndeces and switchedIndeces (unswitchedIndeces are disregarded)
     j = 0
     for onlyIndeces in indecesList[:-1]:
         
@@ -436,8 +438,6 @@ def plotBenchmark(axs, row, runIndeces, center, runDict, method, y_label, color,
 
         axs[row, j].plot(meanSeries, linewidth = 3, color="black", alpha=0.5, label="mean")
         
-        
-
         y1 = meanSeries + abs(np.array(stdMaxSeries))
         y2 = meanSeries - abs(np.array(stdMinSeries))
  
@@ -470,25 +470,22 @@ def plotBenchmark(axs, row, runIndeces, center, runDict, method, y_label, color,
     print ("Opt. Masked Indeces: ", opt_masked_indeces)
     return {"initial tp/fp": init_tpfp, "proportion of initial tp>fp": init_tpfp_good, "cn tp/fp": masked_tpfp, "proportion of cn tp>fp":masked_tpfp_good, "optimal en threshold":opt_masked_indeces}
 
+# load snakemake configuration
 nruns = snakemake.config["nsimulations"]
 nettype = snakemake.config["nettype"]
 seed = snakemake.config["seed"]
 workdir = snakemake.config["workdir"]+"outputs/"+str(seed)+"/"
-#nruns = 10
-#nettype = "cluster" # cluster #scale_free
-#seed = 100
-#workdir ="/home/viktor/project_migration/FoodWeb_gLV/outputs/"+str(seed)+"/"
 
-basedir = workdir+"abundances/" #filt_base_A int [-1,1], #filt_new_sim_A float [-1.0, 1.0]
+basedir = workdir+"abundances/"
 netsdir = workdir+"networks/" 
 benchmarkdir = workdir+"benchmark/" 
 plotdir = benchmarkdir
 supplementsdir = benchmarkdir
-methods_list = ["spieceasi", "esabo", "ccrepe", "sparcc", "propr", "spearman", "ecocopula", "mask"]
+methods_list = ["spieceasi", "esabo", "ccrepe", "sparcc", "propr", "spearman", "ecocopula", "mask"] #consensus network was once called mask
 
 inputFileDir = basedir+"glv_"+nettype+"_"+str(nruns-1)+"_filt_base_A.csv"
 
-if True:
+if True: # set here to False if the outputs were already processed once
     outputs = processOutputs()
 
 print ("Loading processed files")
@@ -499,6 +496,7 @@ sns.set(rc={'figure.figsize':(11.7,8.27)})
 
 
 # 1. Find indeces where switch TP>FP happens
+# the result of this function is not part of the pipeline but kept for completeness
 p = 0
 runIndeces = {}
 
@@ -521,7 +519,7 @@ for meth in allRuns.keys():
     plt.title(meth.upper()+"\nTP<FP percentage: "+str(totalBadRunPercentage)+"% ~> "+str(improvedBadRunPercentage)+" %\nTP>FP switch percentage: "+str(switchedPercentage)+" %")
     p += 1
 
-
+# plot the TP/FPs and PPVs 
 method_statistics = {}
 method_ppv_statistics = {}
 for method in methods_list:
@@ -536,7 +534,7 @@ for method in methods_list:
         title = "spiec-easi"
     fig.suptitle(title.upper()+"\nRelative Precision Improvement", fontsize=25)
     
-    doCenter = True
+    doCenter = True # centering means using increase/decrease of quality improvement centered (in relation) to its initial inference
     tpfps = plotBenchmark(axs,0, runIndeces, doCenter, allRuns, method, 'TP/FP', (.4, .6, .8, .5), False)
     ppvs = plotBenchmark(axs, 1, runIndeces, doCenter, allPpvs, method, 'PPV', (.4, .6, .8, .5), False)
 
