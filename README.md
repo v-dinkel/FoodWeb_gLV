@@ -1,9 +1,22 @@
 # Snakemake Pipeline for Multi-Species Predator-Prey Dynamics and Network Inference
-
 This repository contains a **Snakemake pipeline** for:
 1. Simulating multi-species predator-prey dynamics using the **generalized Lotka-Volterra (gLV) model**.
 2. Inferring ecological networks using seven different inference methods.
 3. Analyzing and benchmarking inference quality (TP/FP rate, PPV).
+It's part of a Manuscript:
+
+# Climate-Driven Functional Shifts in Marine Food Webs from sedaDNA and Network Analysis
+
+## Authors  
+- **Viktor Dinkel** (¹,²) – [viktor.dinkel@awi.de](mailto:viktor.dinkel@awi.de)  
+- **Marc-Thorsten Hütt** (²)  
+- **Ulrike Herzschuh** (¹)  
+- **Stella Z. Buchwald** (¹) †  
+- **Kathleen R. Stoof-Leichsenring** (¹) *  
+
+## Affiliations  
+¹ Alfred-Wegener-Institute, Polar Terrestrial Environmental Systems, Potsdam, Germany  
+² Constructor University Bremen, Germany  
 
 ## Requirements
 
