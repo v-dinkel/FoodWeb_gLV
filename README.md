@@ -93,20 +93,23 @@ snakemake --version
 ## **2. Setting Up the R Environment**
 
 ### **Install R and RStudio**
-Install RStudio from the official source.
+Install R and RStudio from the official source.
 
 ### **Open `inferNetworks.R` in RStudio**
-- RStudio should automatically prompt you to install missing packages.
-- If not, manually install dependencies:
+- Install packages NetComi (https://github.com/stefpeschel/NetCoMi) and ecoCopula.
   ```r
-  install.packages("devtools")
-  install.packages("BiocManager")
+  install.packages("ecoCopula")
   ...
   ```
 
 ### **Handling Missing System Dependencies**
-- If you encounter errors like `ERROR: dependency '...' is missing`, resolve them by installing missing dependencies.
-- Some packages (e.g., `devtools`) require additional system dependencies, which need to be installed outside of R. 
+- If you encounter errors like `ERROR: dependency '...' is missing`, resolve them by installing missing dependencies. For that you likely require devtools:
+  ```r
+  install.packages("devtools")
+  devtools::install_github("tpq/propr")
+  ...
+  ```
+- Some packages (e.g., `devtools`) require additional **system** dependencies, which need to be installed outside of R. 
 - Packages SpiecEasi, SPRING, and NetComi require **multiple** dependencies, which might conflict with OS or R versions. In this case specific package versions have to be hand-picked.
 
 ### **Installing Specific Package Versions**
@@ -133,10 +136,11 @@ Modify `config.yaml` to set the working directory (absolute path required).
 
 ## **4. Running the Snakemake Pipeline**
 
-> ⚠ **Note:** This pipeline does not use Snakemake rule dependencies for a fully automated workflow. This prevents unintended cleanup, allowing manual inspection of intermediate results.
+> **Note:** This pipeline does not use Snakemake rule dependencies for a fully automated workflow. This prevents unintended cleanup, allowing manual inspection of intermediate results.
 
-Run individual steps manually using:
+Run individual steps manually in the **terminal** using:
 ```bash
+conda activate foodweb_glv
 snakemake -j 4 generateBasicSyntheticNetwork
 snakemake -j 4 generateSyntheticAbundanceData_gLV
 snakemake -j 4 inferNetworksR
@@ -145,6 +149,9 @@ snakemake -j 4 benchmarkInferenceQuality
 ```
 
 (`-j 4` sets the number of processors; adjust as needed.)
+
+Troubleshooting:
+- you may encounter "Rscript" error, which means that your R folder is not in the PATH variable. Add the /bin folder of your R directory to the PATH variable and make sure that you can execute "Rscript" in the terminal
 
 ---
 
