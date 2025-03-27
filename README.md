@@ -53,7 +53,7 @@ This guide includes setup instructions for R dependencies using RStudio.
 ### **(Optional) Compare Consensus Network with SpiecEasi of similar size (high threshold, HT)**
 - `inferOnlySENetworksR`:
   - Infers and exports SpiecEasi network with weighted edges/associations to match the size of the Consensus Network.
-  - Script 6_benchmark_SE_HT.py generates plots showing difference in amount of true positives (TP) and false positives (FP).
+  - Script 6_benchmark_SE_HT.py (open and run in Spyder) generates plots showing difference in amount of true positives (TP) and false positives (FP).
 ---
 
 ## **1. Setting Up the Python Environment**
