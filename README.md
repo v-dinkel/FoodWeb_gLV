@@ -99,13 +99,16 @@ Install R and RStudio from the official source.
 - Install packages NetComi (https://github.com/stefpeschel/NetCoMi) and ecoCopula.
   ```r
   install.packages("ecoCopula")
-  ...
   ```
 
 ### **Handling Missing System Dependencies**
 - If you encounter errors like `ERROR: dependency '...' is missing`, resolve them by installing missing dependencies. For that you likely require devtools:
   ```r
   install.packages("devtools")
+  ...
+  ```
+- Using devtools, you can install packages like propr:
+   ```r
   devtools::install_github("tpq/propr")
   ...
   ```
