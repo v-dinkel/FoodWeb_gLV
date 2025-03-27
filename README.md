@@ -109,7 +109,8 @@ snakemake --version
 Install R and RStudio from the official source.
 
 ### **Open `inferNetworks.R` in RStudio**
-- Install packages NetComi (https://github.com/stefpeschel/NetCoMi) and ecoCopula.
+- Install package NetComi with all dependencies (https://github.com/stefpeschel/NetCoMi)
+- Install ecoCopula.
   ```r
   install.packages("ecoCopula")
   ```
