@@ -54,6 +54,7 @@ conda --version
 ```
 
 ### **Clone the Repository**
+Or download and extract the repository as a .zip from Github and extract into a new FoodWeb_gLV folder.
 ```bash
 cd /your/project/folder
 git clone https://github.com/v-dinkel/FoodWeb_gLV
@@ -61,7 +62,7 @@ cd FoodWeb_gLV
 ```
 
 ### **Create and Activate a Conda Environment**
-The repository contains a requirements.txt which includes the python packages and versions.
+The repository contains a requirements.txt which includes the python packages and versions. In the terminal (you should be in the directory of the FoodWeb_gLV folder): 
 ```bash
 conda create --name foodweb_glv --file requirements.txt
 conda activate foodweb_glv
